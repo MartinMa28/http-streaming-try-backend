@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/new', (req, res) => {
+  console.log(req.body);
   Task.create(
     {
       task: req.body.task,
@@ -34,15 +35,17 @@ router.delete('/:id', (req, res) => {
   });
 });
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const tasks = await Task.find();
 
-    console.log(`Find ${tasks.length} tasks`);
+    console.log(`Found ${tasks.length} tasks`);
     res.status(200).json({
-      tasks: tasks
-    })
-  } catch(err) {
+      tasks: tasks,
+    });
+  } catch (err) {
     throw err;
   }
-})
+});
+
+module.exports = router;

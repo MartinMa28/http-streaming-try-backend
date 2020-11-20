@@ -16,7 +16,10 @@ app.get('/', (req, res) => {
   });
 });
 
-mongoose.connect('mongodb://mongo-1:27017', { useUnifiedTopology: true });
+mongoose.connect('mongodb://mongo-1:27017?replicaSet=myRepl', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 const db = mongoose.connection;
 
