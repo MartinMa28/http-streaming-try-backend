@@ -4,6 +4,8 @@ services:
   mongo-1:
     image: mongo:4.4.1
     command:
+      - --storageEngine
+      - wiredTiger
       - --replSet
       - myRepl
     depends_on:
@@ -14,6 +16,8 @@ services:
   mongo-2:
     image: mongo:4.4.1
     command:
+      - --storageEngine
+      - wiredTiger
       - --replSet
       - myRepl
     restart: always
@@ -21,6 +25,8 @@ services:
   mongo-3:
     image: mongo:4.4.1
     command:
+      - --storageEngine
+      - wiredTiger
       - --replSet
       - myRepl
     restart: always
