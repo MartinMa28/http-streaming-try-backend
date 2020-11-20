@@ -1,10 +1,28 @@
 version: '3'
 
 services:
-  db:
+  mongo-1:
     image: mongo:4.4.1
-    ports:
-      - '27017:27017'
+    command:
+      - --replSet
+      - myRepl
+    depends_on:
+      - mongo-2
+      - mongo-3
+    restart: always
+
+  mongo-2:
+    image: mongo:4.4.1
+    command:
+      - --replSet
+      - myRepl
+    restart: always
+
+  mongo-3:
+    image: mongo:4.4.1
+    command:
+      - --replSet
+      - myRepl
     restart: always
 
   web:
@@ -13,7 +31,9 @@ services:
     ports:
       - '8000:5000'
     depends_on:
-      - db
+      - mongo-1
+      - mongo-2
+      - mongo-3
     volumes:
       - './src:/code/src'
     restart: always
