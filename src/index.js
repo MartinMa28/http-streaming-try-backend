@@ -22,10 +22,12 @@ mongoose.connect('mongodb://mongo-1:27017?replicaSet=myRepl', {
 });
 
 const db = mongoose.connection;
-
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-// db.once('open', () => {
-//   app.listen()
-// });
+db.once('open', () => {
+  app.listen(PORT, () => console.log(`Listening on port ${PORT} ...`));
+  const changeStream = db.collection('tasks').watch();
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT} ...`));
+  changeStream.on('change', (change) => {
+    console.log('DB is modified.');
+  });
+});
