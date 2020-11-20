@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  db:
+    image: mongo:4.4.1
+    ports:
+      - '27017:27017'
+    restart: always
+
+  web:
+    build: .
+    command: npm start
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+    volumes:
+      - './src:/code/src'
+    restart: always
