@@ -66,4 +66,4 @@ Set mongo-3 as an arbiter
 addArb('mongo-3')
 ```
 
-You are all set.
+You are all set. Please check http://localhost:8000.
