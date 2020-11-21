@@ -1,11 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const api = require('./routes/api');
+const path = require('path');
 
 const app = express();
 const PORT = 5000;
 
+app.use(cors());
+app.use(express.static(path.join(__dirname, '../build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api', api);
@@ -21,7 +25,7 @@ app.get('/events', async (req, res) => {
 
   res.writeHead(200, headers);
 
-  res.write(JSON.stringify({ message: 'DB is modified' }));
+  res.write('data: ' + JSON.stringify({ message: 'DB is modified' }) + '\n\n');
 
   const newClient = {
     id: Date.now(),
@@ -36,10 +40,14 @@ app.get('/events', async (req, res) => {
   });
 });
 
-app.get('/', (req, res) => {
+app.get('/status', (req, res) => {
   res.status(200).json({
     message: clients.length,
   });
+});
+
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
 mongoose.connect('mongodb://mongo-1:27017?replicaSet=myRepl', {
@@ -55,8 +63,10 @@ db.once('open', () => {
 
   changeStream.on('change', (change) => {
     console.log('DB is modified.');
-    clients.forEach((c) =>
-      c.res.write(JSON.stringify({ message: 'DB is modified' }))
-    );
+    clients.forEach((c) => {
+      c.res.write(
+        'data: ' + JSON.stringify({ message: 'DB is modified' }) + '\n\n'
+      );
+    });
   });
 });
