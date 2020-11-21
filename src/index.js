@@ -10,9 +10,35 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api', api);
 
+let clients = [];
+
+app.get('/events', async (req, res) => {
+  const headers = {
+    'Content-Type': 'text/event-stream',
+    Connection: 'keep-alive',
+    'Cache-Control': 'no-cache',
+  };
+
+  res.writeHead(200, headers);
+
+  res.write(JSON.stringify({ message: 'DB is modified' }));
+
+  const newClient = {
+    id: Date.now(),
+    res: res,
+  };
+
+  clients.push(newClient);
+
+  req.on('close', () => {
+    console.log(`${newClient.id} connection closed`);
+    clients = clients.filter((c) => c.id != newClient.id);
+  });
+});
+
 app.get('/', (req, res) => {
-  res.status(200).send({
-    message: 'testing',
+  res.status(200).json({
+    message: clients.length,
   });
 });
 
@@ -29,5 +55,8 @@ db.once('open', () => {
 
   changeStream.on('change', (change) => {
     console.log('DB is modified.');
+    clients.forEach((c) =>
+      c.res.write(JSON.stringify({ message: 'DB is modified' }))
+    );
   });
 });
