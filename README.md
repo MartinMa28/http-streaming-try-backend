@@ -63,7 +63,7 @@ docker exec -it http-streaming-try-backend_mongo-2_1 mongo
 Set mongo-3 as an arbiter
 
 ```
-addArb('mongo-3')
+rs.addArb('mongo-3')
 ```
 
 You are all set. Please check http://localhost:8000.
